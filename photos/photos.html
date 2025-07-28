@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Photo Gallery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Optional: disable scroll when modal is open */
+    body.modal-open {
+      overflow: hidden;
+    }
+  </style>
+  <script>
+    function showImage(src) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImg');
+      modal.classList.remove('hidden');
+      modalImg.src = src;
+      document.body.classList.add('modal-open');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+    }
+  </script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="container mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold text-center mb-10">Student Photo Gallery</h1>
+
+    <!-- Image Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <!-- Replace these with your actual image file names -->
+     <img src="1.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="3.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="4.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="5.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="6.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+       <img src="0.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="7.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="8.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="9.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="10.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="11.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+       <img src="12.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="13.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="14.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="15.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="16.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="17.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <img src="18.jpg" onclick="showImage(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition">
+      <!-- Add more images as needed -->
+    </div>
+  </div>
+
+  <!-- Fullscreen Modal -->
+  <div id="imageModal" onclick="closeModal()" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+    <img id="modalImg" class="max-w-full max-h-full rounded shadow-2xl" alt="Full Image">
+  </div>
+
+</body>
+</html>
