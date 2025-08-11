@@ -48,7 +48,7 @@ const thumbnail = document.getElementById('thumbnail');
 video.addEventListener('loadeddata', () => {
   video.currentTime = 1; // Capture at 1 second
 });
-
+  
 video.addEventListener('seeked', () => {
   const ctx = canvas.getContext('2d');
   canvas.width = video.videoWidth;
