@@ -2,105 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Student Video Gallery</title>
+  <title>Video Gallery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body.modal-open {
       overflow: hidden;
     }
   </style>
- 
-<body class="bg-gray-100 p-6">
- <div class="container mx-auto px-4 py-10">
-    <h1 class="text-3xl font-bold text-center mb-10">Student Video Gallery</h1>
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="videoGallery">
+  <script>
+    function showVideo(src) {
+      const modal = document.getElementById('videoModal');
+      const modalVideo = document.getElementById('modalVideo');
+      modalVideo.src = src;
+      modal.classList.remove('hidden');
+      document.body.classList.add('modal-open');
+    }
 
+    function closeModal() {
+      const modal = document.getElementById('videoModal');
+      const modalVideo = document.getElementById('modalVideo');
+      modal.classList.add('hidden');
+      modalVideo.pause();
+      modalVideo.src = "";
+      document.body.classList.remove('modal-open');
+    }
+
+    window.onload = function() {
+      const container = document.getElementById('videoGrid');
+      for (let i = 1; i <= 30; i++) {
+        let div = document.createElement('div');
+        div.className = "cursor-pointer";
+        div.onclick = () => showVideo(`videos/{i}.mp4`);
+
+        div.innerHTML = `
+          <video class="rounded-lg shadow-lg w-full" muted playsinline preload="metadata">
+            <source src="videos/video${i}.mp4" type="video/mp4">
+          </video>
+        `;
+
+        container.appendChild(div);
+      }
+    }
+  </script>
 </head>
 <body class="bg-gray-100">
 
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-    <div id="videoGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4"></div>
+  <div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center">Video Gallery</h1>
 
-<!-- Modal -->
-<div id="videoModal" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-  <video id="modalVideo" class="w-full max-w-4xl rounded-lg shadow-lg" controls playsinline></video>
-  <button onclick="closeVideo()" class="absolute top-5 right-5 text-white text-3xl">&times;</button>
-</div>
+    <!-- Video Grid -->
+    <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+  </div>
 
-<script>
-    <!-- Each video updated for iPhone Safari compatibility -->
-    <video src="1.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="2.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="3.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="4.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-     <video src="5.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="6.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="7.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="9.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="10.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="11.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video> 
-    <video src="13.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="14.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-     <video src="15.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="16.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="17.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="18.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video> 
-    <video src="19.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="20.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="21.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video> 
-    <video src="22.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="23.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="24.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="25.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="26.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="27.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="28.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="29.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    <video src="30.mp4" onclick="showVideo(this.src)" class="w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition" playsinline muted preload="metadata"></video>
-    
-     
-  const videos = [
-    "videos/video1.mp4",
-    "videos/video2.mp4",
-    "videos/video3.mp4",
-    // ... add up to video30.mp4
-  ];
-
-  const videoGrid = document.getElementById("videoGrid");
-
-  videos.forEach(src => {
-    const vid = document.createElement("video");
-    vid.src = src;
-    vid.className = "w-full rounded-lg shadow cursor-pointer";
-    vid.setAttribute("playsinline", "");
-    vid.setAttribute("controls", "");
-    vid.onclick = () => showVideo(src);
-    videoGrid.appendChild(vid);
-  });
-
-  function showVideo(src) {
-    const modal = document.getElementById("videoModal");
-    const modalVideo = document.getElementById("modalVideo");
-    modalVideo.src = src;
-    modal.classList.remove("hidden");
-    document.body.classList.add("modal-open");
-    modalVideo.play();
-  }
-
-  function closeVideo() {
-    const modal = document.getElementById("videoModal");
-    const modalVideo = document.getElementById("modalVideo");
-    modalVideo.pause();
-    modalVideo.src = "";
-    modal.classList.add("hidden");
-    document.body.classList.remove("modal-open");
-  }
-</script>
-
-
-  <!-- Fullscreen Video Modal -->
-  <div id="videoModal" onclick="closeVideoModal()" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
-    <video id="modalVideo" class="max-w-full max-h-full rounded shadow-2xl" playsinline controls></video>
+  <!-- Fullscreen Modal -->
+  <div id="videoModal" class="hidden fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
+    <div class="relative w-11/12 md:w-3/4 lg:w-2/3">
+      <button onclick="closeModal()" class="absolute top-2 right-2 text-white text-3xl">&times;</button>
+      <video id="modalVideo" controls autoplay playsinline class="w-full rounded-lg shadow-xl"></video>
+    </div>
   </div>
 
 </body>
