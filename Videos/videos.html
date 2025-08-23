@@ -1,82 +1,275 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Student Video Gallery</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  body.modal-open { overflow: hidden; }
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Video Gallery</title>
+  <!-- Tailwind CSS (CDN) for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Extra safety for iPhone notch fullscreen spacing when modal open */
+    body.modal-open { overflow: hidden; padding-right: var(--scrollbar-comp, 0px); }
+    /* Smooth thumbnail fade-in */
+    .fade-in { opacity: 0; transition: opacity .4s ease; }
+    .fade-in.ready { opacity: 1; }
+  </style>
 </head>
-<body class="bg-gray-100 p-6">
- <div class="container mx-auto px-4 py-10">
-    <h1 class="text-3xl font-bold text-center mb-10">Student Video Gallery</h1>
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="videoGallery">
-  <!-- Thumbnails will be generated here -->
-</div>
+<body class="bg-zinc-50 min-h-screen text-zinc-900">
+  <!-- Header -->
+  <header class="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-zinc-200">
+    <div class="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+      <h1 class="text-2xl md:text-3xl font-semibold">Student Video Gallery</h1>
+      <div class="text-sm text-zinc-600">Tap a video to play full screen</div>
+    </div>
+  </header>
 
-<!-- Fullscreen Video Modal -->
-<div id="videoModal" onclick="closeVideoModal()" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
-  <video id="modalVideo" class="max-w-full max-h-full rounded shadow-2xl" controls>playsinline muted
-</video>
-</div>
+  <!-- Main -->
+  <main class="mx-auto max-w-6xl px-4 pb-24 pt-6">
+    <!-- Info / Help -->
+    <div class="mb-4 text-sm text-zinc-600">
+      <p> <code class="px-1 rounded bg-zinc-100"></code>
+    </div>
 
-<script>
-const videoFiles = [
-  "2.mp4","4.mp4","5.mp4","6.mp4","7.mp4","8.mp4","9.mp4","10.mp4",
-  "11.mp4","12.mp4","13.mp4","14.mp4","15.mp4","16.mp4","17.mp4","18.mp4","19.mp4","20.mp4",
-  "21.mp4","22.mp4","23.mp4","24.mp4","25.mp4","26.mp4","27.mp4","28.mp4","29.mp4","30.mp4"
-];
+    <!-- Grid container -->
+    <section id="gallery" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></section>
+  </main>
 
-const gallery = document.getElementById("videoGallery");
+  <!-- Modal Player -->
+  <div id="playerModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/80">
+    <button id="closeBtn" class="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full bg-white/90 hover:bg-white shadow">
+      <span class="sr-only">Close</span>
+      <!-- X icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
 
-videoFiles.forEach(src => {
-  const tempVideo = document.createElement("video");
-  tempVideo.src = src;
-  tempVideo.preload = "metadata";
-  tempVideo.muted = true;
-
-  tempVideo.addEventListener("loadeddata", () => {
-    tempVideo.currentTime = 1; // capture frame at 1 second
-  });
-
-  tempVideo.addEventListener("seeked", () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = tempVideo.videoWidth;
-    canvas.height = tempVideo.videoHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(tempVideo, 0, 0);
-
-    const img = document.createElement("img");
-    img.src = canvas.toDataURL("image/jpeg");
-    img.className = "w-full h-48 object-cover rounded-xl cursor-pointer shadow hover:shadow-lg transition";
-    img.onclick = () => showVideo(src);
-
-    gallery.appendChild(img);
-  });
-});
-
-function showVideo(src) {
-  document.getElementById("modalVideo").src = src;
-  document.getElementById("videoModal").classList.remove("hidden");
-  document.body.classList.add("modal-open");
-}
- window.onload = function() {
-      const container = document.getElementById('videoGrid');
-      videoFiles.forEach(file => {
-        let div = document.createElement('div');
-        div.className = "cursor-pointer";
-        div.onclick = () => showVideo(file);
-function closeVideoModal() {
-  document.getElementById("modalVideo").pause();
-  document.getElementById("videoModal").classList.add("hidden");
-  document.body.classList.remove("modal-open");
-}
-</script>
- <!-- Fullscreen Video Modal -->
-  <div id="videoModal" onclick="closeVideoModal()" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
-    <video id="modalVideo" class="max-w-full max-h-full rounded shadow-2xl" controls></video>
+    <video id="player" class="w-full h-full max-h-[90vh] max-w-[90vw] rounded-xl bg-black" controls playsinline webkit-playsinline></video>
   </div>
+
+  <!-- Templates -->
+  <template id="cardTemplate">
+    <article class="group relative rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-sm">
+      <div class="relative aspect-video bg-zinc-200">
+        <img class="thumb absolute inset-0 w-full h-full object-cover fade-in" alt="Video thumbnail" />
+        <div class="absolute inset-0 flex items-center justify-center">
+          <!-- Play button overlay -->
+          <div class="opacity-90 group-hover:opacity-100 transition-opacity bg-white rounded-full p-3 shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+          </div>
+        </div>
+      </div>
+      <div class="p-3">
+        <h3 class="title text-sm font-medium line-clamp-2"></h3>
+        <p class="mt-1 text-xs text-zinc-500">Tap to play</p>
+      </div>
+      <button class="absolute inset-0" aria-label="Play video"></button>
+    </article>
+  </template>
+
+  <script>
+    // ====================
+    // 1) LIST YOUR 30 VIDEOS HERE
+    // Just replace the file names and titles. Keep the array length as needed.
+    // Files should be same-origin (e.g., /videos/..), otherwise iPhone Safari won't allow seeking thumbnails to canvas.
+    // ====================
+    const VIDEOS = [
+      // EXAMPLE PATHS — replace with your files inside /videos/
+      { src: "1.mp4" },
+      {  src: "2.mp4" },
+      {  src: "3.mp4" },
+      {  src: "4.mp4" },
+      {  src: "5.mp4" },
+      {  src: "6.mp4" },
+      {  src: "7.mp4" },
+      {  src: "8.mp4" },
+      {  src: "9.mp4" },
+      {  src: "10.mp4" },
+      {  src: "V11.mp4" },
+      {  src: "12.mp4" },
+      {  src: "13.mp4" },
+      {  src: "14.mp4" },
+      {  src: "15.mp4" },
+      {  src: "16.mp4" },
+      {  src: "17.mp4" },
+      {  src: "18.mp4" },
+      {  src: "19.mp4" },
+      {  src: "20.mp4" },
+      {  src: "21.mp4" },
+      {  src: "22.mp4" },
+      {  src: "23.mp4" },
+      {  src: "24.mp4" },
+      {  src: "25.mp4" },
+      {  src: "26.mp4" },
+      {  src: "27.mp4" },
+      {  src: "28.mp4" },
+      {  src: "29.mp4" },
+      {  src: "30.mp4" },
+    ];
+
+    // ====================
+    // 2) BUILD GRID
+    // ====================
+    const gallery = document.getElementById('gallery');
+    const tpl = document.getElementById('cardTemplate');
+
+    VIDEOS.forEach((item, idx) => {
+      const node = tpl.content.cloneNode(true);
+      node.querySelector('.title').textContent = item.title || `Video ${idx+1}`;
+      const img = node.querySelector('.thumb');
+      img.alt = item.title || `Video ${idx+1}`;
+
+      // Lazy-create thumbnail when in view
+      const btn = node.querySelector('button');
+      btn.addEventListener('click', () => openPlayer(item.src));
+
+      // Use IntersectionObserver to generate thumbnails lazily
+      const cardEl = node.querySelector('article');
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            generateThumbnail(item.src, img).finally(() => {
+              img.classList.add('ready');
+            });
+            obs.unobserve(e.target);
+          }
+        });
+      }, { rootMargin: '200px' });
+
+      gallery.appendChild(node);
+      // need to observe the actual element in DOM; use last child
+      io.observe(gallery.lastElementChild);
+    });
+
+    // ====================
+    // 3) THUMBNAIL GENERATION
+    // Attempts: seek to 2s -> draw to canvas -> toDataURL -> set as <img src>
+    // If same-origin or with proper CORS headers, this works on iPhone Safari 13+.
+    // If it fails, we fallback to a simple play-icon-only tile.
+    // ====================
+    async function generateThumbnail(src, imgEl) {
+      try {
+        const video = document.createElement('video');
+        video.src = src;
+        video.preload = 'auto';              // load enough to seek
+        video.muted = true;                   // iOS allows muted loads more readily
+        video.playsInline = true;
+        video.setAttribute('crossorigin', 'anonymous'); // helps if server adds CORS headers
+
+        await once(video, 'loadedmetadata');
+        // Pick a safe time ~2s or 10% if duration is short
+        const t = isFinite(video.duration) && video.duration > 0 ? Math.min(2, Math.max(0.1, video.duration * 0.1)) : 1.0;
+        if (video.readyState < 2) {
+          // ensure we can seek
+          await video.play().catch(()=>{});
+          video.pause();
+        }
+        await seek(video, t);
+
+        const canvas = document.createElement('canvas');
+        const w = Math.min(640, video.videoWidth || 640);
+        const h = Math.round(w * (video.videoHeight || 360) / (video.videoWidth || 640));
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, w, h);
+        const dataURL = canvas.toDataURL('image/jpeg');
+        imgEl.src = dataURL;
+      } catch (err) {
+        console.warn('Thumbnail failed for', src, err);
+        // graceful fallback: use a tiny inline SVG placeholder
+        const svg = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'><rect width='160' height='90' fill='#e5e7eb'/><polygon points='60,30 120,45 60,60' fill='#9ca3af'/></svg>`);
+        imgEl.src = `data:image/svg+xml;charset=utf-8,${svg}`;
+      }
+    }
+
+    function once(target, event) {
+      return new Promise(res => target.addEventListener(event, () => res(), { once: true }));
+    }
+    function seek(video, time) {
+      return new Promise((resolve, reject) => {
+        const onSeeked = () => { cleanup(); resolve(); };
+        const onError = () => { cleanup(); reject(new Error('seek failed')); };
+        const cleanup = () => {
+          video.removeEventListener('seeked', onSeeked);
+          video.removeEventListener('error', onError);
+        };
+        video.addEventListener('seeked', onSeeked, { once: true });
+        video.addEventListener('error', onError, { once: true });
+        try { video.currentTime = Math.max(0.01, time); } catch { onError(); }
+      });
+    }
+
+    // ====================
+    // 4) FULLSCREEN PLAYER (iPhone‑safe)
+    // Clicking a card opens modal, loads the chosen video, and tries to go fullscreen using
+    // the best available API: requestFullscreen -> webkitEnterFullscreen (iOS fallback).
+    // ====================
+    const modal = document.getElementById('playerModal');
+    const player = document.getElementById('player');
+    const closeBtn = document.getElementById('closeBtn');
+
+    async function openPlayer(src) {
+      // Prevent scroll behind modal
+      document.body.classList.add('modal-open');
+
+      // Show modal first for iOS user gesture policies
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      // Load and play
+      player.src = src;
+      player.controls = true;
+      player.playsInline = true;
+      player.setAttribute('webkit-playsinline', '');
+
+      try { await player.play(); } catch (e) { /* user gesture might be needed, controls visible anyway */ }
+
+      // Try fullscreen: standard -> iOS Safari fallback
+      const goFullscreen = async () => {
+        try {
+          if (player.requestFullscreen) { await player.requestFullscreen(); }
+          else if (player.webkitEnterFullscreen) { player.webkitEnterFullscreen(); }
+        } catch (e) { /* ignore */ }
+      };
+      // On iOS, calling immediately after play usually succeeds
+      goFullscreen();
+    }
+
+    function closePlayer() {
+      player.pause();
+      player.removeAttribute('src');
+      player.load();
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(()=>{});
+      }
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.classList.remove('modal-open');
+    }
+
+    closeBtn.addEventListener('click', closePlayer);
+
+    // Close on click outside the video
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closePlayer();
+    });
+
+    // ESC to close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closePlayer();
+    });
+
+    // Handle iOS exiting native fullscreen
+    ['webkitendfullscreen', 'ended'].forEach(ev => player.addEventListener(ev, () => {
+      // Keep modal open; user can close via X
+    }));
+
+    // Optional: compute scrollbar compensation when modal opens (prevents layout shift on desktop)
+    (() => {
+      const scrollBarW = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.setProperty('--scrollbar-comp', scrollBarW + 'px');
+    })();
+  </script>
 </body>
 </html>
+
+
+
